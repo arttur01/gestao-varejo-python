@@ -1,19 +1,23 @@
-from estoque_manager import EstoqueManager
-from repositorio import RepositorioCSV
-from fornecedor import Fornecedor
+from models.fornecedor import Fornecedor
+from services.estoque_manager import EstoqueManager
+from repositories.repositorio import RepositorioCSV
 
 def main():
-    # Configuração Inicial
+    # 1. Configuração Inicial
+    # Passamos apenas o nome do arquivo. O Repositorio cuida do caminho "data/"
     repo = RepositorioCSV("meu_estoque.csv")
     gerente = EstoqueManager(repo)
-    gerente.carregar_dados() # O sistema 'acorda' com os dados do arquivo
-    gerente.dados_carregados('meu_estoque.csv')
     
+    # O sistema 'acorda' com os dados do arquivo CSV
+    gerente.carregar_dados() 
+    
+    # Exibe o Pandas usando o novo método refatorado
+    gerente.exibir_tabela_pandas()
 
-    # criando objeto Fornecedor para o teste
+    # 2. Criando objeto Fornecedor para o teste
     distribuidora = Fornecedor("Atacado Tech", "12345678000199", 3)
 
-    # Simulando programa
+    # 3. Simulando programa
     print("--- Início da Operação ---")
 
     # Tentativa de Reposição
@@ -25,7 +29,12 @@ def main():
         monitor.vender(2)
 
     print("--- Operação Finalizada ---")
-    gerente.salvar_dados() # Garante que tudo foi gravado no CSV
+    
+    # Garante que tudo foi gravado no CSV antes do programa fechar
+    gerente.salvar_dados() 
+    
+    # Exibe novamente para comprovar que o Pandas lê os dados atualizados
+    gerente.exibir_tabela_pandas()
 
 if __name__ == "__main__":
     main()

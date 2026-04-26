@@ -1,15 +1,16 @@
-from repositorio import RepositorioEstoque
-from fornecedor import Fornecedor
-from produto import Produto
+from repositories.repositorio import RepositorioEstoque
+from models.fornecedor import Fornecedor
+from models.produto import Produto
 import pandas as pd
 
 class EstoqueManager:
+    # Injeção de dependência: O Manager recebe o repositório pronto.
     def __init__(self, repositorio: RepositorioEstoque):
         self._repositorio = repositorio
         self._catalogo = {} # Começa vazio
 
     def carregar_dados(self):
-        # Pega os dados do repositorio(catalogo) 
+        # Pega os dados do repositorio (catalogo) 
         self._catalogo = self._repositorio.carregar()
 
     def salvar_dados(self):
@@ -27,9 +28,15 @@ class EstoqueManager:
             p.repor_estoque(qtd, fornecedor)
             self.salvar_dados() # Salva automaticamente após repor
         else:
-            print(f"Erro: Produto {nome} não cadastrado.")
+            print(f"Erro: Produto '{nome}' não cadastrado.")
 
-    def dados_carregados(self, nome_arquivo):
-        # Visualizar o catalogo em forma de tabela
-        catalogo_carregado = pd.read_csv(nome_arquivo)
-        print(catalogo_carregado)
+    def exibir_tabela_pandas(self):
+        """
+        Acessa o caminho do arquivo de forma segura através do repositório 
+        para gerar a visualização via Pandas.
+        """
+        if hasattr(self._repositorio, 'caminho_arquivo'):
+            df = pd.read_csv(self._repositorio.caminho_arquivo)
+            print("\n--- Visão Geral do Estoque ---")
+            print(df)
+            print("------------------------------\n")
